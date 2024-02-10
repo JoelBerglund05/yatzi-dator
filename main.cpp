@@ -29,6 +29,11 @@ private:
 public:
   array<int, 5> GetDiceArray() { return dice; }
 
+  void DisplayDices() {
+    for (int i = 0; i < 5; i++)
+      cout << dice[i] << " ";
+  }
+
   string GetPlayerName() { return name; }
 };
 
@@ -110,18 +115,24 @@ public:
         std::chrono::duration_cast<std::chrono::nanoseconds>(
             std::chrono::system_clock::now().time_since_epoch())
             .count();
+    cout << system_time_nanoseconds << endl;
+
     std::mt19937 rng(system_time_nanoseconds);
-    system_time_nanoseconds *=
-        static_cast<int>(pow(system_time_nanoseconds, 2));
+    cout << system_time_nanoseconds << endl;
     for (int i = 0; i < numbers_to_generate; i++) {
       random[i] = 1 + (rng() % 6);
+      cout << random[i] << " ";
     }
+    cout << endl;
     return random;
   }
 
   void PlayerTurn() {
     for (int i = 0; i < players.size(); i++) {
       cout << players[i].GetPlayerName() << " tur" << endl;
+      cout << "Dina tärnignar är: " << endl;
+      players[i].DisplayDices();
+      cout << endl;
     }
   }
 };
@@ -139,6 +150,8 @@ int main() {
   while (board.GetPlaying()) {
 
     board.AddRandomDiceToDiceArray();
+
+    board.PlayerTurn();
 
     return 0;
   }

@@ -7,10 +7,24 @@
         {
             "type": "cmake",
             "request": "launch",
-            "name": "yatzy",
+            "name": "CMake: Configure project",
             "cmakeDebugType": "configure",
             "clean": false,
             "configureAll": false
+        }
+        {
+            "type": "cmake",
+            "request": "launch",
+            "name": "CMake: Script debugging",
+            "cmakeDebugType": "script",
+            "scriptPath": "${workspaceFolder}/<...>.cmake"
+        }
+        {
+            "type": "cmake",
+            "request": "launch",
+            "name": "CMake: Externally launched",
+            "cmakeDebugType": "external",
+            "pipeName": "<...>"
         }
     ]
 }
