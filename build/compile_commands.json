@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/joel/Documents/GitHub/yatzi-dator/build",
+  "command": "/usr/bin/c++   -g -o CMakeFiles/yatzy.dir/main.cpp.o -c /home/joel/Documents/GitHub/yatzi-dator/main.cpp",
+  "file": "/home/joel/Documents/GitHub/yatzi-dator/main.cpp"
+}
+]

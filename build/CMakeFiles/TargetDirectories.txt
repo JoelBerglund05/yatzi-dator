@@ -1,0 +1,3 @@
+/home/joel/Documents/GitHub/yatzi-dator/build/CMakeFiles/rebuild_cache.dir
+/home/joel/Documents/GitHub/yatzi-dator/build/CMakeFiles/edit_cache.dir
+/home/joel/Documents/GitHub/yatzi-dator/build/CMakeFiles/yatzy.dir
