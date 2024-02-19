@@ -1,5 +1,31 @@
 # Loggbok
 
+## Vecka 7
+
+Denna veckan har jag inte gjort speciellt mycket jag har ändrat strukturen på min kod men strukturen kommer inte funka, eftersom jag har satt en vector i min Board class som innnehåller Player obejecten men jag kommer inte åt spelar obejecterna på de sättet. Jag kom framåt litegranna genom att jag testade min random metod lite mer och jag insåg att den ger ganska lika tal varje gång så jag ändrade den till att brara innehålla system tid upphöjt i tre.
+
+	array<int, 5> RandomDice(int numbers_to_generate) {
+    array<int, 5> random = {0, 0, 0, 0, 0};
+    sleep(0.00001);
+    auto system_time_nanoseconds =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::system_clock::now().time_since_epoch())
+            .count();
+    cout << system_time_nanoseconds << endl;
+
+    std::mt19937 rng(system_time_nanoseconds);
+    cout << system_time_nanoseconds << endl;
+    for (int i = 0; i < numbers_to_generate; i++) {
+      random[i] = 1 + (rng() % 6);
+      cout << random[i] << " ";
+    }
+    cout << endl;
+    return random;
+  }
+
+Jag har också skaffat lite extensions för vs code så nu formateras min kod när jag sparar. 
+videon jag hitta på [youtube](https://www.youtube.com/watch?v=q2IVvPGjiaU) visade några riktit bra extensions.
+
 ## vecka 6
 
 Denna veckan gjorde jag ganska mycket jag började med att fixa så man kunde bestämma hur många spelare som ska 
