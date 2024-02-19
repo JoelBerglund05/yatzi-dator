@@ -61,6 +61,12 @@ det var för kort tid vilket jag insåg var problemet. här kommer koden:
 
 Som du ser bytte jag till nanosekunder. **(Jag borde nämna att det var Alex ide att använda system time men 
 köra system time upphöjt till två)**
+Men Bings chat bot spottade ut rng() koden, alltså denna koden:
+	auto system_time_nanoseconds = chrono::duration_cast<chrono::nanoseconds>(
+        			chrono::system_clock::now().time_since_epoch()
+    			).count();
+	mt19937 rng(system_time_nanoseconds);
+	random[i] = 1 + (rng() % 6);
 
 ### **Varför behövs system time?**
 
