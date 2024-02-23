@@ -19,10 +19,8 @@ using std::vector;
 class Player {
 private:
   string name = "Player";
-  string combination_left[15] = {
-      "Ettor", "Tvåor",       "Treor",      "Fyror", "Femmor",
-      "Sexor", "Ett par",     "Två par",    "Triss", "Fyrtal",
-      "Kåk",   "Liten stege", "Stor stege", "chans", "Yatzy"};
+
+protected:
   int score = 0;
   array<int, 5> dice = {0, 0, 0, 0, 0};
 
@@ -37,10 +35,62 @@ public:
   string GetPlayerName() { return name; }
 };
 
-class Board {
+class Rule {};
+
+class Dice {
+public:
+  array<int, 5> RandomDice(int numbers_to_generate) {
+    array<int, 5> random = {0, 0, 0, 0, 0};
+    sleep(0.00001);
+    auto system_time_nanoseconds =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::system_clock::now().time_since_epoch())
+            .count();
+
+    std::mt19937 rng(system_time_nanoseconds);
+    for (int i = 0; i < numbers_to_generate; i++) {
+      random[i] = 1 + (rng() % 6);
+    }
+    cout << endl;
+    return random;
+  }
+};
+
+class Scoreboard {
+private:
+  vector<Player> players;
+  string combination_left[15] = {
+      "Ettor", "Tvåor",       "Treor",      "Fyror", "Femmor",
+      "Sexor", "Ett par",     "Två par",    "Triss", "Fyrtal",
+      "Kåk",   "Liten stege", "Stor stege", "chans", "Yatzy"};
+};
+
+class UserInput {
 private:
   bool playing = false;
-  vector<Player> players;
+
+  string AddPlayerName(int index) {
+    string name = "Player";
+    cout << "spelare " << index + 1 << " name: ";
+    cin >> name;
+
+    return name;
+  };
+
+  int HandleUserInput(int user_input) {
+    bool valid_user_input = false;
+    while (!valid_user_input) {
+      if (cin.fail()) {
+        cin.clear();
+        cin.ignore();
+        cout << "Please enter an Integer only.";
+        cin >> user_input;
+      } else {
+        valid_user_input = true;
+      }
+    }
+    return user_input;
+  }
 
 public:
   void StartGame() {
@@ -61,15 +111,10 @@ public:
     }
   }
 
-  string AddPlayerName(int index) {
-    string name = "Player";
-    cout << "spelare " << index + 1 << " name: ";
-    cin >> name;
+  bool GetPlaying() { return playing; }
 
-    return name;
-  }
-
-  void AddPlayerCount() {
+  vector<Player> AddPlayerCount() {
+    vector<Player> players;
     cout << "Hur många ska spela: " << endl
          << "1. En spelare. Du kommer möta datorn" << endl
          << "2. Två spelare" << endl
@@ -83,75 +128,29 @@ public:
       players.push_back(Player{});
       AddPlayerName(i);
     }
-  }
-
-  bool GetPlaying() { return playing; }
-
-  int HandleUserInput(int user_input) {
-    bool valid_user_input = false;
-    while (!valid_user_input) {
-      if (cin.fail()) {
-        cin.clear();
-        cin.ignore();
-        cout << "Please enter an Integer only.";
-        cin >> user_input;
-      } else {
-        valid_user_input = true;
-      }
-    }
-    return user_input;
-  }
-
-  void AddRandomDiceToDiceArray() {
-    for (int i = 0; i < players.size(); i++) {
-      players[i].GetDiceArray() = RandomDice(5);
-    }
-  }
-
-  array<int, 5> RandomDice(int numbers_to_generate) {
-    array<int, 5> random = {0, 0, 0, 0, 0};
-    sleep(0.00001);
-    auto system_time_nanoseconds =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::system_clock::now().time_since_epoch())
-            .count();
-    cout << system_time_nanoseconds << endl;
-
-    std::mt19937 rng(system_time_nanoseconds);
-    cout << system_time_nanoseconds << endl;
-    for (int i = 0; i < numbers_to_generate; i++) {
-      random[i] = 1 + (rng() % 6);
-      cout << random[i] << " ";
-    }
-    cout << endl;
-    return random;
-  }
-
-  void PlayerTurn() {
-    for (int i = 0; i < players.size(); i++) {
-      cout << players[i].GetPlayerName() << " tur" << endl;
-      cout << "Dina tärnignar är: " << endl;
-      players[i].DisplayDices();
-      cout << endl;
-    }
+    return players;
   }
 };
 
-int main() {
-  Board board;
-  board.StartGame();
+class Computer : protected Player {};
 
-  if (board.GetPlaying() == false) {
+int main() {
+  UserInput user_inputs;
+  Dice dices;
+
+  user_inputs.StartGame();
+
+  if (user_inputs.GetPlaying() == false) {
     return 0;
   }
 
-  board.AddPlayerCount();
+  vector<Player> players = user_inputs.AddPlayerCount();
 
-  while (board.GetPlaying()) {
+  while (user_inputs.GetPlaying()) {
 
-    board.AddRandomDiceToDiceArray();
-
-    board.PlayerTurn();
+    for (int i = 0; i < players.size(); i++) {
+      players[i].GetDiceArray() = dices.RandomDice(5);
+    }
 
     return 0;
   }
