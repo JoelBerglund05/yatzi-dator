@@ -1,12 +1,7 @@
-#include <algorithm>
-#include <bitset>
 #include <chrono>
-#include <cmath>
-#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <random>
-#include <string>
 #include <unistd.h>
 using std::array;
 using std::cin;
@@ -51,7 +46,6 @@ public:
     for (int i = 0; i < numbers_to_generate; i++) {
       random[i] = 1 + (rng() % 6);
     }
-    cout << endl;
     return random;
   }
 };
