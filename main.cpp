@@ -10,7 +10,6 @@ using std::array;
 using std::cin;
 using std::cout;
 using std::endl;
-using std::sort;
 using std::string;
 using std::vector;
 
@@ -117,14 +116,14 @@ private:
         |   |
     these isn't equal to each other so it can't be a full house.
     */
-    if (dice[0] == dice[1]) {
-      if (dice[2] == dice[4]) {
+    if (dice[0] == dice[2]) {
+      if (dice[3] == dice[4]) {
         if (dice[0] != dice[4])
           return true;
       } else
         return false;
-    } else if (dice[0] == dice[2]) {
-      if (dice[3] == dice[4]) {
+    } else if (dice[0] == dice[1]) {
+      if (dice[2] == dice[4]) {
         if (dice[0] != dice[4])
           return true;
       } else
@@ -259,7 +258,7 @@ class Dice {
 private:
   array<int, 5> dice = {0, 0, 0, 0, 0};
 
-  void SortDiceArray() { sort(dice.begin(), dice.end()); }
+  void SortDiceArray() { std::sort(dice.begin(), dice.end()); }
 
 public:
   void FullRandomDiceArray() {
