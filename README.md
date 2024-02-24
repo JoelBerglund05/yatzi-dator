@@ -1,5 +1,41 @@
 # Loggbok
 
+## Vecka 8
+
+Denna veckan har jag arbetat ganska mycket. jag har arbetat med hur jag ska hantera data alltså strukturen jag ska ha på dokumentet. Tidigare hade jag en Player och Board class men det skapade massor av problem mellan vad som skulle ha vad så jag komfram till att det är bättre med fler classer. Nu har jag Player, Rule, Dice, Scoreboard, UserInput och Computer. Computer Inherits Player attributes. Denna strukturen gjorde det mycket lättare att hantera datan. Efter jag satte upp strukturen så började jag med reglerna och jag lyckades sätta upp alla möjliga kombinationer så det inte är möjligt att fuska så man får yatzy utan att man har det. den mest komplexa kombinationen att sätta reglerna va kåk. 
+
+	bool CheckIfDiceCombinationIsFullHouse(array<int, 5> dice) {
+    /* Checks dice one and two if they are equal
+    then checks if the rest are equal to each other.
+    we only need to check the dice with one in the between because they are
+    sorted. check example:
+    Can't happend
+    2 2 6 5 6
+    would become
+    2 2 5 6 6
+        ^   ^
+        |   |
+    these isn't equal to each other so it can't be a full house.
+    */
+    if (dice[0] == dice[2]) {
+      if (dice[3] == dice[4]) {
+        if (dice[0] != dice[4])
+          return true;
+      } else
+        return false;
+    } else if (dice[0] == dice[1]) {
+      if (dice[2] == dice[4]) {
+        if (dice[0] != dice[4])
+          return true;
+      } else
+        return false;
+    } else
+      return false;
+    return false;
+  }
+
+Det var inte svårt att komma fram till hur man skulle göra det. de ända man behöver tänka på är vilket mönster finns i kåk och hur förklarar jag för datorn hur mönstret fungerar. För att underlätta för mig själv sorterar jag listan innan jag kollan kombinationerna. Jag valde också att inte använda and och istället nesta för att göra koden mer läsbar.
+
 ## Vecka 7
 
 Denna veckan har jag inte gjort speciellt mycket jag har ändrat strukturen på min kod men strukturen kommer inte funka, eftersom jag har satt en vector i min Board class som innnehåller Player obejecten men jag kommer inte åt spelar obejecterna på de sättet. Jag kom framåt litegranna genom att jag testade min random metod lite mer och jag insåg att den ger ganska lika tal varje gång så jag ändrade den till att brara innehålla system tid upphöjt i tre.
