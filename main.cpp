@@ -38,11 +38,16 @@ private:
       "Sexor", "Ett par",     "Två par",    "Triss", "Fyrtal",
       "Kåk",   "Liten stege", "Stor stege", "chans", "Yatzy"};
 
-  void NumberCounter(int count_dice_number_index, int dice_number,
-                     array<int, 5> dice) {
-    for (int i = 0; i < dice.size(); i++) {
-      if (dice[i] == dice_number)
-        count_dice_number[count_dice_number_index] += 1;
+  void NumberCounter(array<int, 5> dice) {
+    int current_die_number = 1;
+    array<int, 6> amount_of_ones_to_sixes[6] = {0, 0, 0, 0, 0, 0};
+    for (int dice_array_index = 0; dice_array_index < 6; dice_array_index++) {
+      for (int cound_dice_number_index = 0; cound_dice_number_index < 6;
+           cound_dice_number_index++) {
+        if (dice[dice_array_index] == current_die_number) {
+          count_dice_number[cound_dice_number_index] += 1;
+        }
+      }
     }
   }
 
@@ -108,7 +113,7 @@ private:
     then checks if the rest are equal to each other.
     we only need to check the dice with one in the between because they are
     sorted. check example:
-    Can't happend
+    Can't happened
     2 2 6 5 6
     would become
     2 2 5 6 6
@@ -183,10 +188,9 @@ private:
   }
 
   bool CheckIfDiceCombinationIsOneOfTheSixNumbers(array<int, 5> dice) {
-    // TODO: NumberCounder() metoden är svår läst
-    for (int i = 0; i < 6; i++) {
-      NumberCounter(i, (i + 1), dice);
-    }
+    // TODO: NumberCounter() metoden är svår läst
+    int current_die_number = 0;
+    NumberCounter();
     for (int i = 0; i < 6; i++) {
       if (count_dice_number[i] > 0)
         return true;
@@ -194,18 +198,45 @@ private:
     return false;
   }
 
+  bool CheckCombinations(int combination_number, array<int, 5> dice) {
+    bool chance = true;
+    switch (combination_number) {
+    case 6:
+      return CheckIfDiceCombinationIsOnePair(dice);
+    case 7:
+      return CheckIfDiceCombinationIsTwoPair(dice);
+    case 8:
+      return CheckIfDiceCombinationIsThreeOfAKind(dice);
+    case 9:
+      return CheckIfDiceCombinationIsFourOfAKind(dice);
+    case 10:
+      return CheckIfDiceCombinationIsFullHouse(dice);
+    case 11:
+      return CheckIfDiceCombinationIsSmallStraight(dice);
+    case 12:
+      return CheckIfDiceCombinationIsLargeStraight(dice);
+    case 13:
+      return chance;
+    case 14:
+      return CheckIfDiceCombinationIsYatzy(dice);
+    default:
+      return false;
+    }
+  }
+
 public:
   void PrintPosibleCombinations(array<int, 5> dice,
                                 vector<string> combination_left) {
-    int size = sizeof(count_dice_number) / sizeof(count_dice_number[0]);
     bool count_dice_number_bool[15] = {false, false, false, false, false,
                                        false, false, false, false, false,
                                        false, false, false, false, false};
     if (CheckIfDiceCombinationIsOneOfTheSixNumbers(dice) == true) {
-      for (int i = 0; i < size; i++) {
+      for (int i = 0; i < 6; i++) {
         if (count_dice_number[i] < 0)
           count_dice_number_bool[i] = true;
+        cout << count_dice_number_bool[i] << " ";
       }
+      cout << endl;
     }
 
     auto if_combination_left =
@@ -216,37 +247,29 @@ public:
       if_combination_left =
           std::find(combination_left.begin(), combination_left.end(),
                     starting_combination[i]);
-      if (if_combination_left != combination_left.end()) {
+      if (if_combination_left != combination_left.end() and i >= 6) {
         // TODO: checka om specefik kombination följer reglerna jag satt över i
         // TODO: private delen i classen
-        count_dice_number_bool[i] = true;
+        count_dice_number_bool[i] = CheckCombinations(i, dice);
       }
     }
 
-    bool combinations_posible[15] = {
-        count_dice_number_bool[0],
-        count_dice_number_bool[1],
-        count_dice_number_bool[2],
-        count_dice_number_bool[3],
-        count_dice_number_bool[4],
-        count_dice_number_bool[5],
-        CheckIfDiceCombinationIsOnePair(dice),
-        CheckIfDiceCombinationIsTwoPair(dice),
-        CheckIfDiceCombinationIsThreeOfAKind(dice),
-        CheckIfDiceCombinationIsFourOfAKind(dice),
-        CheckIfDiceCombinationIsFullHouse(dice),
-        CheckIfDiceCombinationIsSmallStraight(dice),
-        CheckIfDiceCombinationIsLargeStraight(dice),
-        found_chance,
-        CheckIfDiceCombinationIsYatzy(dice)};
+    bool combinations_possible[15] = {
+        count_dice_number_bool[0],  count_dice_number_bool[1],
+        count_dice_number_bool[2],  count_dice_number_bool[3],
+        count_dice_number_bool[4],  count_dice_number_bool[5],
+        count_dice_number_bool[6],  count_dice_number_bool[7],
+        count_dice_number_bool[8],  count_dice_number_bool[9],
+        count_dice_number_bool[10], count_dice_number_bool[11],
+        count_dice_number_bool[12], count_dice_number_bool[13],
+        count_dice_number_bool[14]};
 
-    size = sizeof(combinations_posible) / sizeof(combinations_posible[0]);
+    int size = sizeof(combinations_possible) / sizeof(combinations_possible[0]);
     cout << "0. Ingen av kombinationerna " << endl;
     int choice_index = 1;
     for (int i = 1; i < size; i++) {
-      if (combinations_posible[i] == true) {
-        if (combination_left)
-          cout << choice_index << ". " << combination_left[i] << endl;
+      if (combinations_possible[i] == true) {
+        cout << choice_index << ". " << combination_left[i] << endl;
         choice_index += 1;
       }
     }
