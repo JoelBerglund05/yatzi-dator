@@ -32,22 +32,30 @@ public:
 
 class Rule {
 private:
-  int count_dice_number[6] = {0, 0, 0, 0, 0, 0};
+  int count_dice[6] = {0, 0, 0, 0, 0, 0};
   vector<string> starting_combination = {
       "Ettor", "Tvåor",       "Treor",      "Fyror", "Femmor",
       "Sexor", "Ett par",     "Två par",    "Triss", "Fyrtal",
       "Kåk",   "Liten stege", "Stor stege", "chans", "Yatzy"};
 
+  void ClearCountDiceVariable() {
+    for (int i = 0; i < 6; i++) {
+      count_dice[i] = 0;
+    }
+  }
+
   void NumberCounter(array<int, 5> dice) {
     int current_die_number = 1;
-    array<int, 6> amount_of_ones_to_sixes[6] = {0, 0, 0, 0, 0, 0};
-    for (int dice_array_index = 0; dice_array_index < 6; dice_array_index++) {
-      for (int cound_dice_number_index = 0; cound_dice_number_index < 6;
-           cound_dice_number_index++) {
-        if (dice[dice_array_index] == current_die_number) {
-          count_dice_number[cound_dice_number_index] += 1;
+
+    ClearCountDiceVariable();
+
+    for (int i = 0; i < 6; i++) {
+      for (int current_index = 0; current_index < 6; current_index++) {
+        if (dice[current_index] == current_die_number) {
+          count_dice[i] += 1;
         }
       }
+      current_die_number += 1;
     }
   }
 
@@ -190,9 +198,9 @@ private:
   bool CheckIfDiceCombinationIsOneOfTheSixNumbers(array<int, 5> dice) {
     // TODO: NumberCounter() metoden är svår läst
     int current_die_number = 0;
-    NumberCounter();
+    NumberCounter(dice);
     for (int i = 0; i < 6; i++) {
-      if (count_dice_number[i] > 0)
+      if (count_dice[i] > 0)
         return true;
     }
     return false;
@@ -232,9 +240,9 @@ public:
                                        false, false, false, false, false};
     if (CheckIfDiceCombinationIsOneOfTheSixNumbers(dice) == true) {
       for (int i = 0; i < 6; i++) {
-        if (count_dice_number[i] < 0)
+        if (count_dice[i] > 0)
           count_dice_number_bool[i] = true;
-        cout << count_dice_number_bool[i] << " ";
+        cout << count_dice[i] << " ";
       }
       cout << endl;
     }
@@ -263,7 +271,8 @@ public:
         count_dice_number_bool[10], count_dice_number_bool[11],
         count_dice_number_bool[12], count_dice_number_bool[13],
         count_dice_number_bool[14]};
-
+    // TODO: Ettor syns inte som ett alternativ fast ettor finns i tätning
+    // TODO: listan
     int size = sizeof(combinations_possible) / sizeof(combinations_possible[0]);
     cout << "0. Ingen av kombinationerna " << endl;
     int choice_index = 1;
