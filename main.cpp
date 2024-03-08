@@ -242,9 +242,7 @@ public:
       for (int i = 0; i < 6; i++) {
         if (count_dice[i] > 0)
           count_dice_number_bool[i] = true;
-        cout << count_dice[i] << " ";
       }
-      cout << endl;
     }
 
     auto if_combination_left =
@@ -256,8 +254,6 @@ public:
           std::find(combination_left.begin(), combination_left.end(),
                     starting_combination[i]);
       if (if_combination_left != combination_left.end() and i >= 6) {
-        // TODO: checka om specefik kombination följer reglerna jag satt över i
-        // TODO: private delen i classen
         count_dice_number_bool[i] = CheckCombinations(i, dice);
       }
     }
@@ -271,12 +267,11 @@ public:
         count_dice_number_bool[10], count_dice_number_bool[11],
         count_dice_number_bool[12], count_dice_number_bool[13],
         count_dice_number_bool[14]};
-    // TODO: Ettor syns inte som ett alternativ fast ettor finns i tätning
-    // TODO: listan
+
     int size = sizeof(combinations_possible) / sizeof(combinations_possible[0]);
     cout << "0. Ingen av kombinationerna " << endl;
     int choice_index = 1;
-    for (int i = 1; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       if (combinations_possible[i] == true) {
         cout << choice_index << ". " << combination_left[i] << endl;
         choice_index += 1;
@@ -389,6 +384,13 @@ public:
     }
     return players;
   }
+
+  int ChooseOption() {
+    int choice = 0;
+    cin >> choice;
+    choice = HandleUserInput(choice);
+    return choice;
+  }
 };
 
 class Computer : protected Player {};
@@ -405,17 +407,20 @@ int main() {
   }
 
   vector<Player> players = user_inputs.AddPlayerCount();
+  int Player_turn = 1;
 
   while (user_inputs.GetPlaying()) {
 
     dices.FullRandomDiceArray();
 
     for (int i = 0; i < players.size(); i++) {
-      cout << "Spelare " << i << " tur. Dina täningar är: ";
+      cout << "Spelare " << Player_turn << " tur. Dina täningar är: ";
       dices.DisplayDices();
       cout << "Dessa kombinationer har du: " << endl;
       checks_rules.PrintPosibleCombinations(dices.GetDiceArray(),
                                             players[i].GetCombinationsLeft());
+
+      Player_turn += 1;
     }
 
     return 0;
