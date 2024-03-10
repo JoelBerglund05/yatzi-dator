@@ -28,6 +28,13 @@ public:
   string GetPlayerName() { return name; }
 
   vector<string> GetCombinationsLeft() { return combination_left; }
+
+  void ChoosingCombination(int choise) {
+    if (choise == 0)
+      ;
+    else {
+    }
+  }
 };
 
 class Rule {
