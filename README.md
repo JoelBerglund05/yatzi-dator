@@ -1,5 +1,50 @@
 # Loggbok
 
+## Vecka 11
+
+Jag har ändrat ännu en gång på min struktur. Jag tittade på ditt Black Jack repositorie och tog lite insperation på hur jag skulle kunna tänka. Jag ändrade så att Rule classen nu är Master classen medans Dice klassen styr över alla kombinationer. Jag har också gjort att det går att kassta om tärningarna två gågner och sen kunna välja en kombination eller stryka och få poängen som man ska ha.
+
+Ingen av koden jag skrev var svår att skriva det gälled bara att hitta ett sätt som inte är över kombliserad. Men jag har insett att mitt sätt att kolla vilka kombinationer är möjliga att välja är inte så bra eftersom att jag har en NumberCounter metod som jag använder göt att spara poäng och då kan jag använda den för logiken för att ta reda på vilka kombinationer jag kan välja.
+
+Här kommer koden som räknar poäng:
+
+  int GetDiceValue(int choice) {
+    string combination = Getspecificcombination(choice);
+
+    int value = 0;
+    for (int i = 0; i < starting_combination.size(); i++) {
+      if (starting_combination[i] == combination) {
+        if (i <= 5)
+          value += (i + 1) * count_dice[i];
+        else if (i == 6) {
+          int highest_value = 0;
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 2)
+              highest_value = (index + 1);
+          value += highest_value * 2;
+        } else if (i == 7) {
+          for (int first_index = 0; first_index < 6; first_index++)
+            for (int second_index = 0; second_index < 6; second_index++)
+              if (count_dice[first_index] == 2 and count_dice[second_index])
+                value += (first_index + 1) * count_dice[first_index];
+        } else if (i == 8) {
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 3)
+              value += (index + 1) * count_dice[index];
+        } else if (i == 9) {
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 4)
+              value += (index + 1) * count_dice[index];
+        } else
+          for (int index = 0; index < dice.size(); index++)
+            value += dice[index];
+      }
+    }
+    return value;
+  }
+
+Jag är inte säker om detta är endresultatet av denna koden eller om jag vill göra det på något annat sätt. men just nu så fungerar koden så att den tittar på vart mitt val ligger i start kombinations listan och sedan räknar den tärningarna som den ska räkna ihop.
+
 ## Vecka 10
 
 Denna veckan har jag gjort min kod lite mer läsbar och

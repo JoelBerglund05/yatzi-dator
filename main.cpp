@@ -46,7 +46,9 @@ public:
   void AddScore(int total_value, string combination) {
     score += total_value;
     RemoveCombination(combination);
-    cout << score << endl;
+    cout << "Du har " << score << " poäng" << endl
+         << "Men din totala value är " << total_value << endl;
+    sleep(2);
   }
 };
 
@@ -255,7 +257,7 @@ private:
 
 public:
   Dice() {
-    dice = {0, 0, 0, 0, 0};
+    dice = {1, 4, 5, 5, 5};
     for (int i = 0; i < 6; i++)
       count_dice[i] = 0;
     starting_combination = {"Ettor",      "Tvåor",  "Treor",   "Fyror",
@@ -277,9 +279,22 @@ public:
       dice[i] = 1 + (rng() % 6);
     }
     SortDiceArray();
-    for (int i = 0; i < 5; i++)
-      cout << dice[i] << " ";
-    cout << endl;
+    DisplayDices();
+  }
+
+  void RandomNumberToReroll(vector<int> dice_to_reroll) {
+    auto system_time_nanoseconds =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::system_clock::now().time_since_epoch())
+            .count();
+
+    std::mt19937 rng(system_time_nanoseconds);
+    int index_to_reroll = 0;
+    for (int i = 0; i < dice_to_reroll.size(); i++) {
+      index_to_reroll = dice_to_reroll[i] - 1;
+      dice[index_to_reroll] = 1 + (rng() % 6);
+    }
+    SortDiceArray();
   }
 
   array<int, 5> GetDiceArray() { return dice; }
@@ -292,7 +307,8 @@ public:
     cout << endl;
   }
 
-  void PrintPosibleCombinations(vector<string> combination_left) {
+  void PrintPosibleCombinations(vector<string> combination_left,
+                                string print_no_combinations) {
     bool count_dice_number_bool[15] = {false, false, false, false, false,
                                        false, false, false, false, false,
                                        false, false, false, false, false};
@@ -328,7 +344,7 @@ public:
         count_dice_number_bool[14]};
 
     int size = sizeof(combinations_possible) / sizeof(combinations_possible[0]);
-    cout << "0. Ingen av kombinationerna " << endl;
+    cout << "0. " << print_no_combinations << endl;
     int choice_index = 1;
     possible_combinations.clear();
     for (int i = 0; i < size; i++) {
@@ -338,7 +354,6 @@ public:
         choice_index += 1;
       }
     }
-    cout << endl;
   }
 
   string Getspecificcombination(int index) {
@@ -347,17 +362,36 @@ public:
 
   int GetDiceValue(int choice) {
     string combination = Getspecificcombination(choice);
+
     int value = 0;
     for (int i = 0; i < starting_combination.size(); i++) {
       if (starting_combination[i] == combination) {
         if (i <= 5)
           value += (i + 1) * count_dice[i];
-        else
-          for (int i = 0; i < 6; i++)
-            value += dice[i];
+        else if (i == 6) {
+          int highest_value = 0;
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 2)
+              highest_value = (index + 1);
+          value += highest_value * 2;
+        } else if (i == 7) {
+          for (int first_index = 0; first_index < 6; first_index++)
+            for (int second_index = 0; second_index < 6; second_index++)
+              if (count_dice[first_index] == 2 and count_dice[second_index])
+                value += (first_index + 1) * count_dice[first_index];
+        } else if (i == 8) {
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 3)
+              value += (index + 1) * count_dice[index];
+        } else if (i == 9) {
+          for (int index = 0; index < 6; index++)
+            if (count_dice[index] == 4)
+              value += (index + 1) * count_dice[index];
+        } else
+          for (int index = 0; index < dice.size(); index++)
+            value += dice[index];
       }
     }
-
     return value;
   }
 };
@@ -374,6 +408,10 @@ private:
   Dice dices;
 
   bool playing;
+  int Player_turn = 1;
+  int player_tryes = 1;
+  string const print_no_combinations = "Ingen av kombinationerna ";
+  string const remove_combinations = "Stryk en kombination ";
 
   string AddPlayerName(int index) {
     string name = "Player";
@@ -443,16 +481,86 @@ private:
     return players;
   }
 
+  void RerollDice() {
+    cout << "Dina tärningar är: ";
+    dices.DisplayDices();
+    cout << endl
+         << "Vilka Täningar vill du byta ut? Svara med nummret på platsen av "
+            "tärningen men bara en tärning i taget. "
+         << endl
+         << "Skriv 0 när du valde dem "
+            "du ville slå om."
+         << endl;
+    vector<int> dice_to_reroll;
+    int answer = 0;
+    for (int i = 1; i < dices.GetDiceArray().size(); i++) {
+      // TODO: Hantera hur man ska svara att man är nöjd med vilka som ska bytas
+      // TODO: ut
+      /*0 = bryt ut ur loopen*/
+
+      cin >> answer;
+      cout << "Var det någon mer tärning som ska kasstas om?" << endl;
+      if (answer != 0) {
+        answer = HandleUserInput(answer);
+        dice_to_reroll.push_back(answer);
+      } else {
+        i = dices.GetDiceArray().size();
+      }
+    }
+    dices.RandomNumberToReroll(dice_to_reroll);
+  }
+
+  void PrintCombinationsLeft(vector<string> combination_left) {
+    int choice_index = 1;
+    for (int i = 0; i < combination_left.size(); i++) {
+      cout << choice_index << ". " << combination_left[i] << endl;
+      choice_index += 1;
+    }
+  }
+
   void ChoosingCombination(int index) {
+
     int choice = ChooseOption();
-    if (choice == 0)
+    if (choice == 0) {
       // TODO: hantera vilka täningar som ska sparas
-      ;
-    else {
+      RerollDice();
+      player_tryes += 1;
+      if (player_tryes < 3) {
+        ShowImportantInformationAboutDice(index, print_no_combinations);
+        ChoosingCombination(index);
+      } else {
+        ShowImportantInformationAboutDice(index, remove_combinations);
+        choice = ChooseOption();
+        if (choice == 0) {
+          cout << "Vilken kombination vill du stryka? " << endl;
+          vector<string> combinations_left =
+              players[index].GetCombinationsLeft();
+          PrintCombinationsLeft(combinations_left);
+          cin >> choice;
+          choice -= 1;
+          players[index].RemoveCombination(combinations_left[choice]);
+        } else {
+          choice -= 1;
+          players[index].AddScore(dices.GetDiceValue(choice),
+                                  dices.Getspecificcombination(choice));
+          player_tryes = 1;
+        }
+      }
+    } else {
       choice -= 1;
       players[index].AddScore(dices.GetDiceValue(choice),
                               dices.Getspecificcombination(choice));
+      player_tryes = 1;
     }
+  }
+
+  void ShowImportantInformationAboutDice(int index,
+                                         string print_no_combinations) {
+    cout << "Dina tärningar är: ";
+    dices.DisplayDices();
+    cout << "Dessa kombinationer har du: " << endl;
+    dices.PrintPosibleCombinations(players[index].GetCombinationsLeft(),
+                                   print_no_combinations);
   }
 
 public:
@@ -467,18 +575,14 @@ public:
 
     players = AddPlayerCount();
 
-    int Player_turn = 1;
-
     while (GetPlaying()) {
 
-      dices.FullRandomDiceArray();
-
       for (int i = 0; i < players.size(); i++) {
-        cout << "Spelare " << Player_turn << " tur. Dina täningar är: ";
-        dices.DisplayDices();
-        cout << "Dessa kombinationer har du: " << endl;
-        dices.PrintPosibleCombinations(players[i].GetCombinationsLeft());
+        dices.FullRandomDiceArray();
+        cout << "Spelare " << Player_turn << " tur. ";
+        ShowImportantInformationAboutDice(i, print_no_combinations);
         ChoosingCombination(i);
+
         Player_turn += 1;
       }
 
