@@ -3,6 +3,7 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <random>
 #include <string>
 #include <unistd.h>
@@ -10,54 +11,125 @@ using std::array;
 using std::cin;
 using std::cout;
 using std::endl;
+using std::map;
 using std::string;
 using std::vector;
 
-class MasterPlayer {
-protected:
-  vector<string> combination_left;
+class Combination {
+private:
+  string name;
+  bool exist;
   int score;
 
 public:
-  MasterPlayer() {
-    combination_left = {"Ettor", "Tvåor",       "Treor",      "Fyror", "Femmor",
-                        "Sexor", "Ett par",     "Två par",    "Triss", "Fyrtal",
-                        "Kåk",   "Liten stege", "Stor stege", "chans", "Yatzy"};
+  Combination(string name) {
+    this->name = name;
+    exist = true;
     score = 0;
   }
-  vector<string> GetCombinationsLeft() { return combination_left; }
+
+  void RemoveCombination() { exist = false; }
+
+  bool IsCombinationLeft() { return exist; }
+
+  string GetName() { return name; }
+
+  int GetScore() { return score; }
+
+  void AddScore(int score) { this->score = score; }
+};
+class MasterPlayer {
+protected:
+  vector<string> *combination_left;
+  int score;
+  vector<Combination> combinations;
+
+public:
+  MasterPlayer() {
+    combination_left = new vector<string>;
+    *combination_left = {"Ettor",      "Tvåor",  "Treor",   "Fyror",
+                         "Femmor",     "Sexor",  "Ett par", "Två par",
+                         "Triss",      "Fyrtal", "Kåk",     "Liten stege",
+                         "Stor stege", "chans",  "Yatzy"};
+    score = 0;
+    for (int i = 0; i < (*combination_left).size(); i++)
+      combinations.push_back(Combination((*combination_left)[i]));
+    delete combination_left;
+  }
+
+  vector<string> GetCombinationsNameLeft() {
+    vector<string> combinations_left;
+    for (int i = 0; i < combinations.size(); i++)
+      if (combinations[i].IsCombinationLeft() == true)
+        combinations_left.push_back(combinations[i].GetName());
+    return combinations_left;
+  }
+
+  string GetSpecificCombination(int index) {
+    return combinations[index].GetName();
+  }
+
+  vector<bool> GetCombinationsLeft() {
+    vector<bool> combinations;
+    for (int i = 0; i < this->combinations.size(); i++)
+      if (this->combinations[i].IsCombinationLeft() == true)
+        combinations.push_back(this->combinations[i].IsCombinationLeft());
+    return combinations;
+  }
+
+  vector<bool> GetOnesToSixes() {
+    vector<bool> combinations;
+    for (int i = 0; i < 5; i++)
+      if (this->combinations[i].IsCombinationLeft() == true)
+        combinations.push_back(this->combinations[i].IsCombinationLeft());
+    return combinations;
+  }
+
+  vector<string> GetAllCombinations() {
+    vector<string> combinations;
+    for (int i = 0; i < this->combinations.size(); i++)
+      combinations.push_back(this->combinations[i].GetName());
+    return combinations;
+  }
+
+  vector<bool> DoesCombinationsExist() {
+    vector<bool> all_combinations;
+    for (int i = 0; i < combinations.size(); i++)
+      all_combinations.push_back(combinations[i].IsCombinationLeft());
+    return all_combinations;
+  }
+
+  void UpdateScoreBoard(int score, int index) {
+    int total_score = 0;
+    for (int i = 0; i < combinations.size(); i++) {
+      if (combinations[i].GetName() == GetSpecificCombination(index)) {
+        combinations[i].AddScore(score);
+        combinations[i].RemoveCombination();
+      }
+      total_score += combinations[i].GetScore();
+    }
+
+    cout << "Du har " << total_score << " poäng" << endl;
+    sleep(2);
+  }
 };
 class Player : public MasterPlayer {
 private:
   string name;
 
 public:
-  Player() { name = "Player"; }
+  Player(string name) {
+    this->name = name;
+    MasterPlayer();
+  }
 
   string GetPlayerName() { return name; }
-
-  void RemoveCombination(string combination) {
-    for (int i = 0; i < combination_left.size(); i++) {
-      if (combination_left[i] == combination)
-        combination_left.erase(combination_left.begin() + i);
-    }
-  }
-
-  void AddScore(int total_value, string combination) {
-    score += total_value;
-    RemoveCombination(combination);
-    cout << "Du har " << score << " poäng" << endl
-         << "Men din totala value är " << total_value << endl;
-    sleep(2);
-  }
 };
 
 class Dice {
 private:
   array<int, 5> dice;
-  int count_dice[6];
-  vector<string> starting_combination;
-  vector<string> possible_combinations;
+  array<int, 6> count_dice;
 
   void SortDiceArray() { std::sort(dice.begin(), dice.end()); }
 
@@ -67,19 +139,13 @@ private:
     }
   }
 
-  void NumberCounter() {
-    int current_die_number = 1;
+  void SetArray(array<int, 6> array) { count_dice = array; }
 
-    ClearCountDiceVariable();
-
-    for (int i = 0; i < 6; i++) {
-      for (int current_index = 0; current_index < 6; current_index++) {
-        if (dice[current_index] == current_die_number) {
-          count_dice[i] += 1;
-        }
-      }
-      current_die_number += 1;
-    }
+public:
+  Dice() {
+    dice = {1, 1, 1, 6, 6};
+    for (int i = 0; i < 6; i++)
+      count_dice[i] = 0;
   }
 
   bool CheckIfDiceCombinationIsYatzy() {
@@ -232,6 +298,17 @@ private:
   bool CheckCombinations(int combination_number) {
     bool chance = true;
     switch (combination_number) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+      if (GetDiceCountFromSpecificIndex(combination_number) > 0)
+        return true;
+      else
+        return false;
+      cout << "Got here" << endl;
     case 6:
       return CheckIfDiceCombinationIsOnePair();
     case 7:
@@ -255,16 +332,36 @@ private:
     }
   }
 
-public:
-  Dice() {
-    dice = {1, 4, 5, 5, 5};
-    for (int i = 0; i < 6; i++)
-      count_dice[i] = 0;
-    starting_combination = {"Ettor",      "Tvåor",  "Treor",   "Fyror",
-                            "Femmor",     "Sexor",  "Ett par", "Två par",
-                            "Triss",      "Fyrtal", "Kåk",     "Liten stege",
-                            "Stor stege", "chans",  "Yatzy"};
-    possible_combinations = {"..."};
+  void NumberCounter() {
+    int current_die_number = 1;
+
+    ClearCountDiceVariable();
+
+    // TODO: Fatta vad fan som gör att listan count_dice fuckar upp im jag inte
+    // TODO: init i metoden.
+
+    array<int, 6> count_dice = {0};
+    for (int i = 0; i < 6; ++i) {
+      cout << count_dice[i] << ",";
+    }
+    cout << endl;
+
+    for (int i = 0; i < 6; i++) {
+      for (int current_index = 0; current_index < 6; current_index++) {
+        if (dice[current_index] == current_die_number) {
+          count_dice[i] += 1;
+        }
+      }
+      current_die_number += 1;
+      cout << count_dice[i] << " ";
+    }
+    cout << endl;
+
+    this->count_dice = count_dice;
+    for (int i = 0; i < 6; ++i) {
+      cout << this->count_dice[i] << ",";
+    }
+    cout << endl;
   }
 
   void FullRandomDiceArray() {
@@ -299,105 +396,16 @@ public:
 
   array<int, 5> GetDiceArray() { return dice; }
 
-  vector<string> GetPossibleCombinations() { return possible_combinations; }
+  int GetDiceCountFromSpecificIndex(int index) {
+    // cout << count_dice[index] << endl;
+    return count_dice[index];
+  }
 
   void DisplayDices() {
     for (int i = 0; i < 5; i++)
       cout << dice[i] << " ";
     cout << endl;
   }
-
-  void PrintPosibleCombinations(vector<string> combination_left,
-                                string print_no_combinations) {
-    bool count_dice_number_bool[15] = {false, false, false, false, false,
-                                       false, false, false, false, false,
-                                       false, false, false, false, false};
-
-    if (CheckIfDiceCombinationIsOneOfTheSixNumbers() == true) {
-      for (int i = 0; i < 6; i++) {
-        if (count_dice[i] > 0)
-          count_dice_number_bool[i] = true;
-      }
-    }
-
-    auto if_combination_left =
-        std::find(combination_left.begin(), combination_left.end(),
-                  starting_combination[0]);
-    bool found_chance = false;
-    for (int i = 0; i < starting_combination.size(); i++) {
-      if_combination_left =
-          std::find(combination_left.begin(), combination_left.end(),
-                    starting_combination[i]);
-      if (if_combination_left != combination_left.end() and i >= 6) {
-        count_dice_number_bool[i] = CheckCombinations(i);
-      }
-    }
-
-    bool combinations_possible[15] = {
-        count_dice_number_bool[0],  count_dice_number_bool[1],
-        count_dice_number_bool[2],  count_dice_number_bool[3],
-        count_dice_number_bool[4],  count_dice_number_bool[5],
-        count_dice_number_bool[6],  count_dice_number_bool[7],
-        count_dice_number_bool[8],  count_dice_number_bool[9],
-        count_dice_number_bool[10], count_dice_number_bool[11],
-        count_dice_number_bool[12], count_dice_number_bool[13],
-        count_dice_number_bool[14]};
-
-    int size = sizeof(combinations_possible) / sizeof(combinations_possible[0]);
-    cout << "0. " << print_no_combinations << endl;
-    int choice_index = 1;
-    possible_combinations.clear();
-    for (int i = 0; i < size; i++) {
-      if (combinations_possible[i] == true) {
-        cout << choice_index << ". " << combination_left[i] << endl;
-        possible_combinations.push_back(combination_left[i]);
-        choice_index += 1;
-      }
-    }
-  }
-
-  string Getspecificcombination(int index) {
-    return possible_combinations[index];
-  }
-
-  int GetDiceValue(int choice) {
-    string combination = Getspecificcombination(choice);
-
-    int value = 0;
-    for (int i = 0; i < starting_combination.size(); i++) {
-      if (starting_combination[i] == combination) {
-        if (i <= 5)
-          value += (i + 1) * count_dice[i];
-        else if (i == 6) {
-          int highest_value = 0;
-          for (int index = 0; index < 6; index++)
-            if (count_dice[index] == 2)
-              highest_value = (index + 1);
-          value += highest_value * 2;
-        } else if (i == 7) {
-          for (int first_index = 0; first_index < 6; first_index++)
-            for (int second_index = 0; second_index < 6; second_index++)
-              if (count_dice[first_index] == 2 and count_dice[second_index])
-                value += (first_index + 1) * count_dice[first_index];
-        } else if (i == 8) {
-          for (int index = 0; index < 6; index++)
-            if (count_dice[index] == 3)
-              value += (index + 1) * count_dice[index];
-        } else if (i == 9) {
-          for (int index = 0; index < 6; index++)
-            if (count_dice[index] == 4)
-              value += (index + 1) * count_dice[index];
-        } else
-          for (int index = 0; index < dice.size(); index++)
-            value += dice[index];
-      }
-    }
-    return value;
-  }
-};
-
-class Scoreboard {
-private:
 };
 
 class Computer : public MasterPlayer {};
@@ -463,6 +471,29 @@ private:
 
   bool GetPlaying() { return playing; }
 
+  vector<bool> GetPossibleCombinations(int index) {
+    vector<bool> combinations_possible;
+    combinations_possible = players[index].DoesCombinationsExist();
+    dices.NumberCounter();
+    for (int i = 0; i < combinations_possible.size(); i++) {
+      combinations_possible[i] = dices.CheckCombinations(i);
+    }
+    return combinations_possible;
+  }
+
+  void PrintPosibleCombinations(int index) {
+    vector<bool> combinations_possible;
+    combinations_possible = GetPossibleCombinations(index);
+    cout << "0. " << print_no_combinations << endl;
+    int choice_index = 1;
+    for (int i = 0; i < combinations_possible.size(); i++)
+      if (combinations_possible[i] == true) {
+        cout << choice_index << ". "
+             << players[index].GetCombinationsNameLeft()[i] << endl;
+        choice_index += 1;
+      }
+  }
+
   vector<Player> AddPlayerCount() {
     vector<Player> players;
     cout << "Hur många ska spela: " << endl
@@ -475,8 +506,7 @@ private:
     player_count = HandleUserInput(player_count);
 
     for (int i = 0; i < player_count; ++i) {
-      players.push_back(Player{});
-      AddPlayerName(i);
+      players.emplace_back(AddPlayerName(i));
     }
     return players;
   }
@@ -526,41 +556,86 @@ private:
       RerollDice();
       player_tryes += 1;
       if (player_tryes < 3) {
-        ShowImportantInformationAboutDice(index, print_no_combinations);
+        ShowImportantInformationAboutDice(index);
         ChoosingCombination(index);
       } else {
-        ShowImportantInformationAboutDice(index, remove_combinations);
+        ShowImportantInformationAboutDice(index);
         choice = ChooseOption();
         if (choice == 0) {
           cout << "Vilken kombination vill du stryka? " << endl;
           vector<string> combinations_left =
-              players[index].GetCombinationsLeft();
-          PrintCombinationsLeft(combinations_left);
+              players[index].GetCombinationsNameLeft();
+          PrintCombinationsLeft(players[index].GetCombinationsNameLeft());
           cin >> choice;
           choice -= 1;
-          players[index].RemoveCombination(combinations_left[choice]);
+          int score = 0;
+          players[index].UpdateScoreBoard(score, index);
         } else {
           choice -= 1;
-          players[index].AddScore(dices.GetDiceValue(choice),
-                                  dices.Getspecificcombination(choice));
+          players[index].UpdateScoreBoard(GetDiceValue(choice, index), index);
           player_tryes = 1;
         }
       }
     } else {
       choice -= 1;
-      players[index].AddScore(dices.GetDiceValue(choice),
-                              dices.Getspecificcombination(choice));
+      players[index].UpdateScoreBoard(GetDiceValue(choice, index), index);
       player_tryes = 1;
     }
   }
 
-  void ShowImportantInformationAboutDice(int index,
-                                         string print_no_combinations) {
+  void ShowImportantInformationAboutDice(int index) {
     cout << "Dina tärningar är: ";
     dices.DisplayDices();
     cout << "Dessa kombinationer har du: " << endl;
-    dices.PrintPosibleCombinations(players[index].GetCombinationsLeft(),
-                                   print_no_combinations);
+    PrintPosibleCombinations(index);
+  }
+
+  int GetDiceValue(int choice, int player_index) {
+    int value = 0;
+    vector<bool> possible_combinations = GetPossibleCombinations(player_index);
+    vector<string> name;
+    for (int i = 0; i < possible_combinations.size(); i++)
+      if (possible_combinations[i] == false) {
+        name.push_back(players[player_index].GetSpecificCombination(i));
+      }
+    for (int i = 0; i < players[player_index].GetAllCombinations().size();
+         i++) {
+      if (players[player_index].GetAllCombinations()[i] == name[choice]) {
+        if (i <= 5) {
+          value += (i + 1) * dices.GetDiceCountFromSpecificIndex(i);
+          cout << "Juppww" << endl;
+
+        } else if (i == 6) {
+          int highest_value = 0;
+          for (int index = 0; index < 6; index++)
+            if (dices.GetDiceCountFromSpecificIndex(index) == 2)
+              highest_value = (index + 1);
+          value += highest_value * 2;
+        } else if (i == 7) {
+          for (int first_index = 0; first_index < 6; first_index++)
+            for (int second_index = 0; second_index < 6; second_index++)
+              if (dices.GetDiceCountFromSpecificIndex(first_index) == 2 and
+                  dices.GetDiceCountFromSpecificIndex(second_index))
+                value += (first_index + 1) *
+                         dices.GetDiceCountFromSpecificIndex(first_index);
+        } else if (i == 8) {
+          for (int index = 0; index < 6; index++)
+            if (dices.GetDiceCountFromSpecificIndex(index) == 3)
+              value += (index + 1) * dices.GetDiceCountFromSpecificIndex(index);
+        } else if (i == 9) {
+          for (int index = 0; index < 6; index++)
+            if (dices.GetDiceCountFromSpecificIndex(index) == 4)
+              value += (index + 1) * dices.GetDiceCountFromSpecificIndex(index);
+        } else {
+          array<int, 5> dice = dices.GetDiceArray();
+          for (int index = 0; index < dice.size(); index++)
+            value += dice[index];
+        }
+        cout << "Jupp" << endl;
+      }
+    }
+    cout << value << endl;
+    return value;
   }
 
 public:
@@ -578,9 +653,9 @@ public:
     while (GetPlaying()) {
 
       for (int i = 0; i < players.size(); i++) {
-        dices.FullRandomDiceArray();
+        // dices.FullRandomDiceArray();
         cout << "Spelare " << Player_turn << " tur. ";
-        ShowImportantInformationAboutDice(i, print_no_combinations);
+        ShowImportantInformationAboutDice(i);
         ChoosingCombination(i);
 
         Player_turn += 1;
@@ -594,5 +669,6 @@ public:
 
 int main() {
   GameMaster game_master;
-  return game_master.MasterMain();
+  game_master.MasterMain();
+  return 0;
 }

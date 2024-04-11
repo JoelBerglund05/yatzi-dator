@@ -1,5 +1,36 @@
 # Loggbok
 
+## Vecka 15
+
+Jag har bestämt mig för att för a en lite gul lösning efter som att jag har får spöknummer när jag använder mig av classens variabel.
+
+    int current_die_number = 1; 
+    ClearCountDiceVariable(); 
+    // TODO: Fatta vad fan som gör att listan count_dice fuckar upp im jag inte
+    // TODO: init i metoden.  
+    array<int, 6> count_dice = {0};
+    for (int i = 0; i < 6; ++i) {
+      cout << count_dice[i] << ",";
+    }
+    cout << endl; 
+    for (int i = 0; i < 6; i++) {
+      for (int current_index = 0; current_index < 6; current_index++) {
+        if (dice[current_index] == current_die_number) {
+          count_dice[i] += 1;
+        }
+      }
+      current_die_number += 1;
+      cout << count_dice[i] << " ";
+    }
+    cout << endl; 
+    this->count_dice = count_dice;
+    for (int i = 0; i < 6; ++i) {
+      cout << this->count_dice[i] << ",";
+    }
+    cout << endl;
+
+count_dice är alltså redan skapad av classen men min "fula" lösning är att skapa den igen i metoden för att sen sätta den till det värde igen.
+
 ## Vecka 11
 
 Jag har ändrat ännu en gång på min struktur. Jag tittade på ditt Black Jack repositorie och tog lite insperation på hur jag skulle kunna tänka. Jag ändrade så att Rule classen nu är Master classen medans Dice klassen styr över alla kombinationer. Jag har också gjort att det går att kassta om tärningarna två gågner och sen kunna välja en kombination eller stryka och få poängen som man ska ha.
@@ -8,7 +39,7 @@ Ingen av koden jag skrev var svår att skriva det gälled bara att hitta ett sä
 
 Här kommer koden som räknar poäng:
 
-  int GetDiceValue(int choice) {
+    int GetDiceValue(int choice) {
     string combination = Getspecificcombination(choice);
 
     int value = 0;
