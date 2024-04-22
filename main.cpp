@@ -105,6 +105,7 @@ public:
       if (combinations[i].GetName() == GetSpecificCombination(index)) {
         combinations[i].AddScore(score);
         combinations[i].RemoveCombination();
+        cout << "hej" << score << endl;
       }
       total_score += combinations[i].GetScore();
     }
@@ -337,14 +338,7 @@ public:
 
     ClearCountDiceVariable();
 
-    // TODO: Fatta vad fan som gör att listan count_dice fuckar upp im jag inte
-    // TODO: init i metoden.
-
     array<int, 6> count_dice = {0};
-    for (int i = 0; i < 6; ++i) {
-      cout << count_dice[i] << ",";
-    }
-    cout << endl;
 
     for (int i = 0; i < 6; i++) {
       for (int current_index = 0; current_index < 6; current_index++) {
@@ -358,10 +352,6 @@ public:
     cout << endl;
 
     this->count_dice = count_dice;
-    for (int i = 0; i < 6; ++i) {
-      cout << this->count_dice[i] << ",";
-    }
-    cout << endl;
   }
 
   void FullRandomDiceArray() {
@@ -397,7 +387,7 @@ public:
   array<int, 5> GetDiceArray() { return dice; }
 
   int GetDiceCountFromSpecificIndex(int index) {
-    // cout << count_dice[index] << endl;
+    cout << count_dice[index] << endl;
     return count_dice[index];
   }
 
@@ -598,12 +588,19 @@ private:
       if (possible_combinations[i] == false) {
         name.push_back(players[player_index].GetSpecificCombination(i));
       }
+
+    for (int i = 0; i < players[player_index].GetAllCombinations().size(); i++)
+      cout << players[player_index].GetAllCombinations()[i] << " ";
+    cout << endl;
+
     for (int i = 0; i < players[player_index].GetAllCombinations().size();
          i++) {
       if (players[player_index].GetAllCombinations()[i] == name[choice]) {
         if (i <= 5) {
-          value += (i + 1) * dices.GetDiceCountFromSpecificIndex(i);
-          cout << "Juppww" << endl;
+          value += i * dices.GetDiceCountFromSpecificIndex(i - 1);
+          cout << "Juppww" << value << " "
+               << dices.GetDiceCountFromSpecificIndex(i - 1) << " i " << i
+               << endl;
 
         } else if (i == 6) {
           int highest_value = 0;
