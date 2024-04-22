@@ -1,5 +1,21 @@
 # Loggbok
 
+## Vecka 17
+
+## Vecka 16
+
+denna veckan har jag debuggat min kod. Jag har fått massor av felräkningar men inga error medalande.
+
+    for (int i = 0; i < players[player_index].GetAllCombinations().size();
+         i++) 
+
+denna koden hade jag tidigare på detta sättet
+
+    for (int i = 0; i < players[player_index].GetAllCombinations()[1].size();
+         i++) 
+
+vilket gjorde att den tittade på hur mång är stringen Ettor och inte hur lång vectorn är.
+
 ## Vecka 15
 
 Jag har bestämt mig för att för a en lite gul lösning efter som att jag har får spöknummer när jag använder mig av classens variabel.
