@@ -105,7 +105,6 @@ public:
       if (combinations[i].GetName() == GetSpecificCombination(index)) {
         combinations[i].AddScore(score);
         combinations[i].RemoveCombination();
-        cout << "hej" << score << endl;
       }
       total_score += combinations[i].GetScore();
     }
@@ -144,9 +143,8 @@ private:
 
 public:
   Dice() {
-    dice = {1, 1, 1, 6, 6};
-    for (int i = 0; i < 6; i++)
-      count_dice[i] = 0;
+    dice = {2, 2, 4, 4, 6};
+    count_dice = {0, 0, 0, 0, 0, 0};
   }
 
   bool CheckIfDiceCombinationIsYatzy() {
@@ -347,9 +345,7 @@ public:
         }
       }
       current_die_number += 1;
-      cout << count_dice[i] << " ";
     }
-    cout << endl;
 
     this->count_dice = count_dice;
   }
@@ -386,10 +382,7 @@ public:
 
   array<int, 5> GetDiceArray() { return dice; }
 
-  int GetDiceCountFromSpecificIndex(int index) {
-    cout << count_dice[index] << endl;
-    return count_dice[index];
-  }
+  int GetDiceCountFromSpecificIndex(int index) { return count_dice[index]; }
 
   void DisplayDices() {
     for (int i = 0; i < 5; i++)
@@ -584,11 +577,20 @@ private:
     int value = 0;
     vector<bool> possible_combinations = GetPossibleCombinations(player_index);
     vector<string> name;
-    for (int i = 0; i < possible_combinations.size(); i++)
-      if (possible_combinations[i] == false) {
-        name.push_back(players[player_index].GetSpecificCombination(i));
-      }
+    int tmp = 0;
+    cout << possible_combinations.size() << endl;
 
+    for (int i = 0; i < possible_combinations.size(); i++)
+      cout << possible_combinations[i];
+    cout << endl;
+
+    for (int i = 0; i < possible_combinations.size(); i++)
+      if (possible_combinations[i] == true) {
+        name.push_back(players[player_index].GetSpecificCombination(i));
+        cout << name[tmp] << " ";
+        tmp += 1;
+      }
+    cout << endl;
     for (int i = 0; i < players[player_index].GetAllCombinations().size(); i++)
       cout << players[player_index].GetAllCombinations()[i] << " ";
     cout << endl;
@@ -598,10 +600,6 @@ private:
       if (players[player_index].GetAllCombinations()[i] == name[choice]) {
         if (i <= 5) {
           value += i * dices.GetDiceCountFromSpecificIndex(i - 1);
-          cout << "Juppww" << value << " "
-               << dices.GetDiceCountFromSpecificIndex(i - 1) << " i " << i
-               << endl;
-
         } else if (i == 6) {
           int highest_value = 0;
           for (int index = 0; index < 6; index++)
@@ -612,9 +610,11 @@ private:
           for (int first_index = 0; first_index < 6; first_index++)
             for (int second_index = 0; second_index < 6; second_index++)
               if (dices.GetDiceCountFromSpecificIndex(first_index) == 2 and
-                  dices.GetDiceCountFromSpecificIndex(second_index))
+                  dices.GetDiceCountFromSpecificIndex(second_index) == 2)
                 value += (first_index + 1) *
                          dices.GetDiceCountFromSpecificIndex(first_index);
+
+          // TODO: fixaså att 2 tvåor och 2 fyror inte blir 24
         } else if (i == 8) {
           for (int index = 0; index < 6; index++)
             if (dices.GetDiceCountFromSpecificIndex(index) == 3)
@@ -628,10 +628,9 @@ private:
           for (int index = 0; index < dice.size(); index++)
             value += dice[index];
         }
-        cout << "Jupp" << endl;
+        cout << i << endl;
       }
     }
-    cout << value << endl;
     return value;
   }
 
