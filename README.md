@@ -18,7 +18,7 @@ vilket gjorde att den tittade på hur mång är stringen Ettor och inte hur lån
 
 ## Vecka 15
 
-Jag har bestämt mig för att för a en lite gul lösning efter som att jag har får spöknummer när jag använder mig av classens variabel.
+Jag har bestämt mig för att för a en lite ful lösning efter som att jag har får spöknummer när jag använder mig av classens variabel.
 
     int current_die_number = 1; 
     ClearCountDiceVariable(); 

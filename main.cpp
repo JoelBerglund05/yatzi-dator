@@ -99,10 +99,13 @@ public:
     return all_combinations;
   }
 
-  void UpdateScoreBoard(int score, int index) {
+  void UpdateScoreBoard(int score, int choice, vector<string> name) {
     int total_score = 0;
+    // TODO: Fixa så logiken är rätt
     for (int i = 0; i < combinations.size(); i++) {
-      if (combinations[i].GetName() == GetSpecificCombination(index)) {
+      if (GetAllCombinations()[i] == name[choice]) {
+        cout << name[choice] << " " << i << " " << GetAllCombinations()[i]
+             << endl;
         combinations[i].AddScore(score);
         combinations[i].RemoveCombination();
       }
@@ -143,7 +146,7 @@ private:
 
 public:
   Dice() {
-    dice = {2, 2, 4, 4, 6};
+    dice = {3, 4, 5, 6, 6};
     count_dice = {0, 0, 0, 0, 0, 0};
   }
 
@@ -459,8 +462,11 @@ private:
     combinations_possible = players[index].DoesCombinationsExist();
     dices.NumberCounter();
     for (int i = 0; i < combinations_possible.size(); i++) {
-      combinations_possible[i] = dices.CheckCombinations(i);
+      if (combinations_possible[i] == true)
+        combinations_possible[i] = dices.CheckCombinations(i);
+      cout << combinations_possible[i] << " ";
     }
+    cout << endl;
     return combinations_possible;
   }
 
@@ -507,7 +513,8 @@ private:
     vector<int> dice_to_reroll;
     int answer = 0;
     for (int i = 1; i < dices.GetDiceArray().size(); i++) {
-      // TODO: Hantera hur man ska svara att man är nöjd med vilka som ska bytas
+      // TODO: Hantera hur man ska svara att man är nöjd med vilka som ska
+      // bytas
       // TODO: ut
       /*0 = bryt ut ur loopen*/
 
@@ -552,16 +559,19 @@ private:
           cin >> choice;
           choice -= 1;
           int score = 0;
-          players[index].UpdateScoreBoard(score, index);
+          players[index].UpdateScoreBoard(score, choice,
+                                          GetPossibleCombinationsName(index));
         } else {
           choice -= 1;
-          players[index].UpdateScoreBoard(GetDiceValue(choice, index), index);
+          players[index].UpdateScoreBoard(GetDiceValue(choice, index), choice,
+                                          GetPossibleCombinationsName(index));
           player_tryes = 1;
         }
       }
     } else {
       choice -= 1;
-      players[index].UpdateScoreBoard(GetDiceValue(choice, index), index);
+      players[index].UpdateScoreBoard(GetDiceValue(choice, index), choice,
+                                      GetPossibleCombinationsName(index));
       player_tryes = 1;
     }
   }
@@ -573,33 +583,27 @@ private:
     PrintPosibleCombinations(index);
   }
 
-  int GetDiceValue(int choice, int player_index) {
-    int value = 0;
+  vector<string> GetPossibleCombinationsName(int player_index) {
     vector<bool> possible_combinations = GetPossibleCombinations(player_index);
     vector<string> name;
-    int tmp = 0;
-    cout << possible_combinations.size() << endl;
-
-    for (int i = 0; i < possible_combinations.size(); i++)
-      cout << possible_combinations[i];
-    cout << endl;
 
     for (int i = 0; i < possible_combinations.size(); i++)
       if (possible_combinations[i] == true) {
         name.push_back(players[player_index].GetSpecificCombination(i));
-        cout << name[tmp] << " ";
-        tmp += 1;
       }
-    cout << endl;
-    for (int i = 0; i < players[player_index].GetAllCombinations().size(); i++)
-      cout << players[player_index].GetAllCombinations()[i] << " ";
-    cout << endl;
+
+    return name;
+  }
+
+  int GetDiceValue(int choice, int player_index) {
+    int value = 0;
+    vector<string> name = GetPossibleCombinationsName(player_index);
 
     for (int i = 0; i < players[player_index].GetAllCombinations().size();
          i++) {
       if (players[player_index].GetAllCombinations()[i] == name[choice]) {
         if (i <= 5) {
-          value += i * dices.GetDiceCountFromSpecificIndex(i - 1);
+          value += (i + 1) * dices.GetDiceCountFromSpecificIndex(i);
         } else if (i == 6) {
           int highest_value = 0;
           for (int index = 0; index < 6; index++)
@@ -607,14 +611,21 @@ private:
               highest_value = (index + 1);
           value += highest_value * 2;
         } else if (i == 7) {
+          bool vlaue_has_been_set = false;
           for (int first_index = 0; first_index < 6; first_index++)
             for (int second_index = 0; second_index < 6; second_index++)
               if (dices.GetDiceCountFromSpecificIndex(first_index) == 2 and
-                  dices.GetDiceCountFromSpecificIndex(second_index) == 2)
-                value += (first_index + 1) *
-                         dices.GetDiceCountFromSpecificIndex(first_index);
-
-          // TODO: fixaså att 2 tvåor och 2 fyror inte blir 24
+                  dices.GetDiceCountFromSpecificIndex(second_index) == 2) {
+                if (first_index != second_index and
+                    vlaue_has_been_set == false) {
+                  value +=
+                      (first_index + 1) *
+                          dices.GetDiceCountFromSpecificIndex(first_index) +
+                      (second_index + 1) *
+                          dices.GetDiceCountFromSpecificIndex(second_index);
+                  vlaue_has_been_set = true;
+                }
+              }
         } else if (i == 8) {
           for (int index = 0; index < 6; index++)
             if (dices.GetDiceCountFromSpecificIndex(index) == 3)
@@ -656,8 +667,7 @@ public:
 
         Player_turn += 1;
       }
-
-      return 0;
+      Player_turn = 1;
     }
     return 0;
   }
