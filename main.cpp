@@ -14,6 +14,7 @@ using std::endl;
 using std::map;
 using std::string;
 using std::vector;
+using std::ws;
 
 class Combination {
 private:
@@ -392,31 +393,31 @@ private:
   string AddPlayerName(int index) {
     string name = "Player";
     cout << "spelare " << index + 1 << " name: ";
-    cin >> name;
+    getline(cin >> ws, name);
 
     return name;
   };
 
-  int HandleUserInput(int user_input) {
+  int HandleUserInput(string user_input) {
     bool valid_user_input = false;
+    int answer = 0;
     while (!valid_user_input) {
-      if (cin.fail()) {
-        cin.clear();
-        cin.ignore();
-        cout << "Please enter an Integer only.";
-        cin >> user_input;
-      } else {
+      try {
+        answer = std::stoi(user_input);
         valid_user_input = true;
+      } catch (const std::invalid_argument &e) {
+        cout << "Invalid input. Please enter a valid integer. ";
+        getline(cin >> ws, user_input);
       }
     }
-    return user_input;
+    return answer;
   }
 
   int ChooseOption() {
-    int choice = 0;
-    cin >> choice;
-    choice = HandleUserInput(choice);
-    return choice;
+    string choice = " ";
+    getline(cin >> ws, choice);
+    int answer = HandleUserInput(choice);
+    return answer;
   }
 
   void StartGame() {
@@ -424,7 +425,7 @@ private:
     string ready = "n";
     while (if_start_game) {
       cout << "Redo att spela yatzy (j/n): ";
-      cin >> ready;
+      getline(cin >> ws, ready);
       for (int i = 0; i < ready.length(); i++) {
         ready[i] = tolower(ready[i]);
       }
@@ -476,9 +477,8 @@ private:
          << "2. Två spelare" << endl
          << "3. Tre spelare" << endl
          << "4. Fyra spelare ";
-    int player_count = 0;
-    cin >> player_count;
-    player_count = HandleUserInput(player_count);
+
+    int player_count = ChooseOption();
 
     for (int i = 0; i < player_count; ++i) {
       players.emplace_back(AddPlayerName(i));
@@ -498,16 +498,18 @@ private:
          << endl;
     vector<int> dice_to_reroll;
     int answer = 0;
+    string user_input = "";
+
     for (int i = 1; i < dices.GetDiceArray().size(); i++) {
       // TODO: Hantera hur man ska svara att man är nöjd med vilka som ska
       // bytas
       // TODO: ut
       /*0 = bryt ut ur loopen*/
 
-      cin >> answer;
+      answer = ChooseOption();
       cout << "Var det någon mer tärning som ska kasstas om?" << endl;
       if (answer != 0) {
-        answer = HandleUserInput(answer);
+        answer = HandleUserInput(user_input);
         dice_to_reroll.push_back(answer);
       } else {
         i = dices.GetDiceArray().size();
@@ -542,7 +544,7 @@ private:
           vector<string> combinations_left =
               players[index].GetCombinationsNameLeft();
           PrintCombinationsLeft(players[index].GetCombinationsNameLeft());
-          cin >> choice;
+          choice = ChooseOption();
           choice -= 1;
           int score = 0;
           players[index].UpdateScoreBoard(score, choice,
