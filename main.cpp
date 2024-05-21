@@ -69,22 +69,6 @@ public:
     return combinations[index].GetName();
   }
 
-  vector<bool> GetCombinationsLeft() {
-    vector<bool> combinations;
-    for (int i = 0; i < this->combinations.size(); i++)
-      if (this->combinations[i].IsCombinationLeft() == true)
-        combinations.push_back(this->combinations[i].IsCombinationLeft());
-    return combinations;
-  }
-
-  vector<bool> GetOnesToSixes() {
-    vector<bool> combinations;
-    for (int i = 0; i < 5; i++)
-      if (this->combinations[i].IsCombinationLeft() == true)
-        combinations.push_back(this->combinations[i].IsCombinationLeft());
-    return combinations;
-  }
-
   vector<string> GetAllCombinations() {
     vector<string> combinations;
     for (int i = 0; i < this->combinations.size(); i++)
@@ -141,8 +125,6 @@ private:
       count_dice[i] = 0;
     }
   }
-
-  void SetArray(array<int, 6> array) { count_dice = array; }
 
 public:
   Dice() {

@@ -1,6 +1,12 @@
 # Loggbok
 
-## Vecka 17
+## Vecka 21
+
+Denna veckan löste jag sissta buggen. vilket var att när jag hade som exempel par och valde de blev chans yatzy och när jag valde ett annat altrenativ ändra den tillbaka men felet uppstod på en annan plats. detta hände ovad sett vilken kombination jag valde och den ändrade alltid ett steg uppåt. problemet var att jag använde mig av fel metod för att skriva ut vilken kombination som du kunnde välja. den jag använde mig av ändrade storlek beroende på vilka som jag leta efter medans resten av koden ut gick ifrån att längden av listan var statisk. så jag ändrade kombinations listan till den statiska vertionen.
+
+## Vecka 17-20
+
+Senaste veckorna har jag fått konstant olika buggar, dessa buggar har varit ganska enkla att lösa men det har varit många.
 
 ## Vecka 16
 
@@ -46,6 +52,14 @@ Jag har bestämt mig för att för a en lite ful lösning efter som att jag har 
     cout << endl;
 
 count_dice är alltså redan skapad av classen men min "fula" lösning är att skapa den igen i metoden för att sen sätta den till det värde igen.
+
+## Vecka 12-14
+
+Jag ärndrade strukturen ännu en gång här emellan. nu använder jag mig av en Game class, en Dice class, en Player class, en Combinations class och en MasterPlayer class vilket är där för att sätta upp en dator class som man ska kunna spela mot. Jag har sen suttit och ändrat i koden så den tittar på de olika combinationerna i Combinations classen istället för listorna med kombinationer.
+
+Combinations classen är uppbygd så att den har bara lite information om namnet på kombinationen, om den finns kvar att välja och hur mycket poäng den är värd.
+
+någon gång vecka 13 eller 14 så började jag att debugga buggar som skapades med denna struktur föränring alltså inte bara dem självklara buggarna som jag skrev lite tidigare om utan räkne fel och likande som skapades med denna förändring.
 
 ## Vecka 11
 
