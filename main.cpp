@@ -122,8 +122,8 @@ private:
 
 public:
   Player(string name) {
-    this->name = name;
     MasterPlayer();
+    this->name = name;
   }
 
   string GetPlayerName() { return name; }
@@ -473,12 +473,16 @@ private:
   void PrintPosibleCombinations(int index) {
     vector<bool> combinations_possible;
     combinations_possible = GetPossibleCombinations(index);
-    cout << "0. " << print_no_combinations << endl;
+    if (player_tryes < 3)
+      cout << "0. " << print_no_combinations << endl;
+    else
+      cout << "0. " << remove_combinations << endl;
+
     int choice_index = 1;
     for (int i = 0; i < combinations_possible.size(); i++)
       if (combinations_possible[i] == true) {
-        cout << choice_index << ". "
-             << players[index].GetCombinationsNameLeft()[i] << endl;
+        cout << choice_index << ". " << players[index].GetAllCombinations()[i]
+             << endl;
         choice_index += 1;
       }
   }
@@ -660,7 +664,7 @@ public:
     while (GetPlaying()) {
 
       for (int i = 0; i < players.size(); i++) {
-        // dices.FullRandomDiceArray();
+        dices.FullRandomDiceArray();
         cout << "Spelare " << Player_turn << " tur. ";
         ShowImportantInformationAboutDice(i);
         ChoosingCombination(i);
