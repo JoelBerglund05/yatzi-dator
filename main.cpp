@@ -406,7 +406,7 @@ private:
         answer = std::stoi(user_input);
         valid_user_input = true;
       } catch (const std::invalid_argument &e) {
-        cout << "Invalid input. Please enter a valid integer. ";
+        cout << "Värdet du lämnade är felaktigt. Svara med ett hel tal: ";
         getline(cin >> ws, user_input);
       }
     }
@@ -447,7 +447,6 @@ private:
     for (int i = 0; i < combinations_possible.size(); i++) {
       if (combinations_possible[i] == true)
         combinations_possible[i] = dices.CheckCombinations(i);
-      cout << combinations_possible[i] << " ";
     }
     cout << endl;
     return combinations_possible;
@@ -458,8 +457,10 @@ private:
     combinations_possible = GetPossibleCombinations(index);
     if (player_tryes < 3)
       cout << "0. " << print_no_combinations << endl;
-    else
+    else {
       cout << "0. " << remove_combinations << endl;
+      player_tryes = 1;
+    }
 
     int choice_index = 1;
     for (int i = 0; i < combinations_possible.size(); i++)
@@ -499,20 +500,21 @@ private:
     vector<int> dice_to_reroll;
     int answer = 0;
     string user_input = "";
+    answer = ChooseOption();
 
     for (int i = 1; i < dices.GetDiceArray().size(); i++) {
-      // TODO: Hantera hur man ska svara att man är nöjd med vilka som ska
-      // bytas
-      // TODO: ut
-      /*0 = bryt ut ur loopen*/
-
-      answer = ChooseOption();
-      cout << "Var det någon mer tärning som ska kasstas om?" << endl;
-      if (answer != 0) {
-        answer = HandleUserInput(user_input);
-        dice_to_reroll.push_back(answer);
+      if (answer <= dices.GetDiceArray().size()) {
+        cout << "Var det någon mer tärning som ska kasstas om?" << endl;
+        answer = ChooseOption();
+        if (answer != 0) {
+          dice_to_reroll.push_back(answer);
+        } else {
+          i = dices.GetDiceArray().size();
+        }
       } else {
-        i = dices.GetDiceArray().size();
+        cout << "Talet är för högt välj ett lägre tal: ";
+        answer = ChooseOption();
+        i -= 1;
       }
     }
     dices.RandomNumberToReroll(dice_to_reroll);
@@ -529,6 +531,15 @@ private:
   void ChoosingCombination(int index) {
 
     int choice = ChooseOption();
+    bool good_answer = false;
+    while (good_answer == false) {
+      if (choice > GetPossibleCombinationsName(index).size()) {
+        cout << "Förstort nummer. Välj ett mindre tal: ";
+        choice = ChooseOption();
+      } else {
+        good_answer = true;
+      }
+    }
     if (choice == 0) {
       // TODO: hantera vilka täningar som ska sparas
       RerollDice();
@@ -547,13 +558,17 @@ private:
           choice = ChooseOption();
           choice -= 1;
           int score = 0;
-          players[index].UpdateScoreBoard(score, choice,
-                                          GetPossibleCombinationsName(index));
-        } else {
-          choice -= 1;
-          players[index].UpdateScoreBoard(GetDiceValue(choice, index), choice,
-                                          GetPossibleCombinationsName(index));
-          player_tryes = 1;
+          bool good_answer = false;
+          while (good_answer == false) {
+            if (choice < combinations_left.size()) {
+              players[index].UpdateScoreBoard(score, choice, combinations_left);
+              good_answer = true;
+            } else {
+              cout << "Värdet är för högt. vilken kombination vill du stryka? "
+                   << endl;
+              choice = ChooseOption();
+            }
+          }
         }
       }
     } else {
