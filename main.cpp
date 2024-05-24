@@ -86,7 +86,6 @@ public:
 
   void UpdateScoreBoard(int score, int choice, vector<string> name) {
     int total_score = 0;
-    // TODO: Fixa så logiken är rätt
     for (int i = 0; i < combinations.size(); i++) {
       if (GetAllCombinations()[i] == name[choice]) {
         cout << name[choice] << " " << i << " " << GetAllCombinations()[i]
@@ -149,21 +148,12 @@ public:
           if (dice[3] == 5) {
             if (dice[4] == 6) {
               return true;
-            } else {
-              return false;
             }
-          } else {
-            return false;
           }
-        } else {
-          return false;
         }
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   bool CheckIfDiceCombinationIsSmallStraight() {
@@ -173,21 +163,12 @@ public:
           if (dice[3] == 4) {
             if (dice[4] == 5) {
               return true;
-            } else {
-              return false;
             }
-          } else {
-            return false;
           }
-        } else {
-          return false;
         }
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   bool CheckIfDiceCombinationIsFullHouse() {
@@ -207,16 +188,13 @@ public:
       if (dice[3] == dice[4]) {
         if (dice[0] != dice[4])
           return true;
-      } else
-        return false;
+      }
     } else if (dice[0] == dice[1]) {
       if (dice[2] == dice[4]) {
         if (dice[0] != dice[4])
           return true;
-      } else
-        return false;
-    } else
-      return false;
+      }
+    }
     return false;
   }
 
@@ -264,13 +242,11 @@ public:
         if (dice[1] != dice[3])
           return true;
       }
-    } else
-      return false;
+    }
     return false;
   }
 
   bool CheckIfDiceCombinationIsOneOfTheSixNumbers() {
-    // TODO: NumberCounter() metoden är svår läst
     int current_die_number = 0;
     NumberCounter();
     for (int i = 0; i < 6; i++) {
@@ -293,7 +269,6 @@ public:
         return true;
       else
         return false;
-      cout << "Got here" << endl;
     case 6:
       return CheckIfDiceCombinationIsOnePair();
     case 7:
@@ -352,6 +327,7 @@ public:
   }
 
   void RandomNumberToReroll(vector<int> dice_to_reroll) {
+    sleep(0.00001);
     auto system_time_nanoseconds =
         std::chrono::duration_cast<std::chrono::nanoseconds>(
             std::chrono::system_clock::now().time_since_epoch())
@@ -362,6 +338,7 @@ public:
     for (int i = 0; i < dice_to_reroll.size(); i++) {
       index_to_reroll = dice_to_reroll[i] - 1;
       dice[index_to_reroll] = 1 + (rng() % 6);
+      cout << dice[index_to_reroll] << endl;
     }
     SortDiceArray();
   }
@@ -518,6 +495,7 @@ private:
       }
     }
     dices.RandomNumberToReroll(dice_to_reroll);
+    cout << "eopfkjepokf oksa3p+odkfseok okapodkpok poawpodke" << endl;
   }
 
   void PrintCombinationsLeft(vector<string> combination_left) {
@@ -541,7 +519,6 @@ private:
       }
     }
     if (choice == 0) {
-      // TODO: hantera vilka täningar som ska sparas
       RerollDice();
       player_tryes += 1;
       if (player_tryes < 3) {
@@ -569,6 +546,11 @@ private:
               choice = ChooseOption();
             }
           }
+        } else {
+          choice -= 1;
+          players[index].UpdateScoreBoard(GetDiceValue(choice, index), choice,
+                                          GetPossibleCombinationsName(index));
+          player_tryes = 1;
         }
       }
     } else {
