@@ -16,6 +16,72 @@ using std::string;
 using std::vector;
 using std::ws;
 
+/*
+
+
+Computer Opponent:
+
+    Create an AI opponent that can make decisions based on the current game
+state. Start with a basic strategy (e.g., always keep the highest dice,
+prioritize certain scoring categories). Gradually improve the AI by adding more
+sophisticated decision-making algorithms.
+
+AI Decision-Making:
+
+    Decide how the computer opponent will choose which dice to keep and which
+scoring category to target. You can use techniques like Monte Carlo simulations,
+rule-based systems, or even machine learning if you want to get fancy!
+
+
+Certainly! Monte Carlo simulation is a powerful computational technique used to
+model the probability of different outcomes in situations where randomness and
+uncertainty play a significant role. Let’s break it down:
+
+    What Is Monte Carlo Simulation?
+        A Monte Carlo simulation involves using random sampling to estimate the
+likelihood of various outcomes. It’s particularly useful when dealing with
+complex systems or processes that cannot be easily predicted due to the
+intervention of random variables. The name “Monte Carlo” comes from the famous
+gambling destination in Monaco, where chance and random outcomes are central,
+similar to games like roulette and dice.
+
+    How Does It Work?
+        Here’s how the Monte Carlo simulation method works:
+            Step 1: Define the Problem
+                Identify the problem you want to analyze. It could be anything
+from financial risk assessment to network performance evaluation. Step 2: Model
+Uncertain Variables Identify the uncertain variables (parameters) in your
+problem. These could be interest rates, stock prices, project costs, etc. Assign
+probability distributions to these variables (e.g., normal distribution, uniform
+distribution). Step 3: Generate Random Samples Simulate the system by generating
+a large number of random samples for the uncertain variables. Each sample
+represents a possible scenario. Step 4: Evaluate Outcomes For each sample,
+calculate the outcome of interest (e.g., project cost, portfolio return, network
+performance). Repeat this process for all samples. Step 5: Analyze Results
+                Aggregate the outcomes from all samples (e.g., average, median,
+percentiles). This provides an estimate of the overall system behavior and the
+associated uncertainty.
+
+    Applications of Monte Carlo Simulation:
+        Finance and Investing:
+            Assessing risk in portfolios, pricing derivatives (e.g., options),
+and estimating default probabilities. Business and Project Management:
+            Estimating project costs, predicting revenue, and evaluating supply
+chain risks. Physics and Engineering: Modeling particle interactions, simulating
+physical processes, and optimizing designs. Other Fields: Meteorology,
+astronomy, and even assessing oil well drilling risks.
+
+    Key Takeaways:
+        Monte Carlo simulations help explain the impact of risk and uncertainty.
+        They require assigning multiple values to uncertain variables and
+averaging the results to obtain estimates. Unlike deterministic methods that use
+single average values, Monte Carlo considers the full range of possibilities.
+
+Remember, Monte Carlo simulations are a valuable tool for decision-making,
+especially when dealing with complex systems and unpredictable factors!
+
+*/
+
 class Combination {
 private:
   string name;
@@ -354,7 +420,28 @@ public:
   }
 };
 
-class Computer : public MasterPlayer {};
+class Computer : public MasterPlayer {
+private:
+  array<int, 15> current_value_of_dice;
+  Dice dice;
+
+  int GetChooice() {
+    dice.FullRandomDiceArray();
+    dice.NumberCounter();
+    int highest_number_of_dice = 0;
+    int index_of_highest_number_of_dice = 0;
+
+    for (int i = 0; i < dice.GetDiceArray().size(); i++) {
+      if (highest_number_of_dice < dice.GetDiceCountFromSpecificIndex(i)) {
+        highest_number_of_dice = dice.GetDiceCountFromSpecificIndex(i);
+        index_of_highest_number_of_dice = i;
+      }
+    }
+  }
+
+public:
+  Computer() { current_value_of_dice = {0}; }
+};
 
 class GameMaster {
 private:
